@@ -1,34 +1,34 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { MdAddShoppingCart } from "react-icons/md";
-import { formatPrice } from "../../util/format";
-import api from "../../services/api";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { MdAddShoppingCart } from 'react-icons/md';
+import { formatPrice } from '../../util/format';
+import api from '../../services/api';
 
-import * as CartActions from "../../store/modules/cart/actions";
+import * as CartActions from '../../store/modules/cart/actions';
 
-import { ProductList } from "./styles";
+import { ProductList } from './styles';
 
 class Home extends Component {
   state = {
-    products: []
+    products: [],
   };
 
   async componentDidMount() {
-    const response = await api.get("products");
+    const response = await api.get('products');
 
     const data = response.data.map(product => ({
       ...product,
-      priceFormatted: formatPrice(product.price)
+      priceFormatted: formatPrice(product.price),
     }));
 
     this.setState({ products: data });
   }
 
-  handleAddProduct = product => {
-    const { addToCart } = this.props;
+  handleAddProduct = id => {
+    const { addToCartRequest } = this.props;
 
-    addToCart(product);
+    addToCartRequest(id);
   };
   render() {
     const { products } = this.state;
@@ -44,7 +44,7 @@ class Home extends Component {
 
             <button
               type="button"
-              onClick={() => this.handleAddProduct(product)}
+              onClick={() => this.handleAddProduct(product.id)}
             >
               <div>
                 <MdAddShoppingCart size={16} color="#FFF" />
@@ -64,7 +64,7 @@ const mapStateToProps = state => ({
   amount: state.cart.reduce((amount, product) => {
     amount[product.id] = product.amount || 0;
     return amount;
-  }, {})
+  }, {}),
 });
 
 const mapDispatchToProps = dispatch =>
